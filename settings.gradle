@@ -7,5 +7,5 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "DesignPatternUtils"
-include ':app'
 include ':design-pattern-util'
+include ':demo'

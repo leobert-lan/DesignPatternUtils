@@ -5,6 +5,8 @@ class Strategy<K, H : IHandler>(
 ) {
     private val strategyMap: MutableMap<K, H> = hashMapOf()
 
+    private var whenMiss:H? = null
+
     fun register(key: K, handler: H): Strategy<K, H> {
         synchronized(this) {
             strategyMap[key] = handler
@@ -12,9 +14,16 @@ class Strategy<K, H : IHandler>(
         }
     }
 
+    fun wheMiss(handler: H): Strategy<K, H> {
+        synchronized(this) {
+            whenMiss = handler
+            return this
+        }
+    }
+
     fun fetch(key: K): H? {
         synchronized(this) {
-            return distinguish.fetch(strategyMap, key)
+            return distinguish.fetch(strategyMap, key)?:whenMiss
         }
     }
 }
@@ -28,9 +37,7 @@ fun <K, H : IHandler> strategyOf(distinguish: IDistinguish<K, H>):Strategy<K, H>
 }
 
 
-interface IHandler {
-
-}
+interface IHandler
 
 interface IDistinguish<KEY, H : IHandler> {
     fun fetch(strategyMap: Map<KEY, H>, key: KEY): H?
